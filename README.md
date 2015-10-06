@@ -1,1 +1,5 @@
-# comp20-aspring
+-Everything in this assignment was implemented in a correct and professional manner
+-To ensure this, the css file was run through a validator
+-The assignment took ~2 hours
+-I did not collaborate with anyone on this assignment
+-w3cschools.com was used as an instructional tool
