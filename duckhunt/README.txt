@@ -1,0 +1,4 @@
+-Everything in this assignment was implemented in a correct and professional manner 
+-The assignment took ~1-2 hours 
+-I did not collaborate with anyone on this assignment 
+-The provided links to the mozilla foundation canvas tutorial was used as an instructional tool
