@@ -1,0 +1,107 @@
+<!DOCTYPE HTML> 
+<html>
+	<head>
+		<title>MapChat</title>
+		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=true"></script>
+		<link rel="stylesheet" href="style.css" />
+		<script>
+			var myLat = 0;
+			var myLng = 0;
+			var request = new XMLHttpRequest();
+			var me = new google.maps.LatLng(myLat, myLng);
+			var map;
+			var marker;
+			var person;
+			var infowindow = new google.maps.InfoWindow();
+			
+			function init()
+			{
+				var myOptions = {
+						zoom: 10, // The larger the zoom number, the bigger the zoom
+						center: my_marker,
+						mapTypeId: google.maps.MapTypeId.ROADMAP
+					};
+				map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+				getData();
+				getMyLocation();
+			}
+			
+			function getMyLocation() {
+				if (navigator.geolocation) { // the navigator.geolocation object is supported on your browser
+					navigator.geolocation.getCurrentPosition(function(position) {
+						myLat = position.coords.latitude;
+						myLng = position.coords.longitude;
+						renderMap();
+					});
+				}
+				else {
+					alert("Geolocation is not supported by your web browser.  What a shame!");
+				}
+			}
+
+			function getData(){ 
+				message.open("GET", "data.json", true) //what is the JSON file?
+				message.send(null);
+				message.onreadystatechange = function(){
+				if(message.readyState == 4){
+					data = message.responseText;
+					person = JSON.parse(data);
+				//	elem = document.getElementById("messages");
+				}else
+					{"error":"Whoops, something is wrong with your data!"} //error statement needed
+				
+			}
+			
+			function renderMap()
+			{	
+				var my_marker;
+				my_marker = new google.maps.LatLng(myLat, myLng);
+				map.panTo(my_marker);		// Update map and go there...
+
+				my_marker = new google.maps.Marker({			// Create a marker
+					position: me;
+					title: "JoshRamsey"; //is this correct?
+				});
+
+				my_marker.setMap(map);
+
+				for (count = 0; count < person.length; count++){
+					person[count] = new google.maps.Marker({
+						function howFar(){     // add source 
+							var R = 6371000; // metres
+							var φ1 = myLat.toRadians();
+							var φ2 = person[count][lat].toRadians();
+							var Δφ = (person[count][lat]-myLat).toRadians();
+							var Δλ = (person[count][lng]-mylng).toRadians();
+
+							var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+        							Math.cos(φ1) * Math.cos(φ2) *
+        							Math.sin(Δλ/2) * Math.sin(Δλ/2);
+							var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+							var distance[count] = R * c;
+						}
+						postition: person[count] = google.maps.LatLng(person[count][lat], person[count][lng]);
+						title: person[count][message];
+						title: person[count][login]; //how display login and message?
+						title: distance[count];
+						person[count].setMap(map);
+					})
+
+				}
+				 //but now theres an array of markers? 
+				// Open info window on click of marker 
+				google.maps.event.addListener(marker, 'click', function() {
+					infowindow.setContent(marker.title);
+					infowindow.open(map, marker);
+				});
+			}
+		
+		</script>
+	}
+
+	</head>
+	
+	<body onload="init()">
+		<div id="map_canvas"></div>
+	</body>
+</html>
