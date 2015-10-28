@@ -5,27 +5,27 @@
 		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=true"></script>
 		<link rel="stylesheet" href="style.css" />
 		<script>
+			
 			var myLat = 0;
 			var myLng = 0;
-			var request = new XMLHttpRequest();
-			var me = new google.maps.LatLng(myLat, myLng);
 			var map;
+			var person = [];
+			var my_marker;
 			var marker;
-			var person;
 			var infowindow = new google.maps.InfoWindow();
-			
-			function init()
-			{
-				var myOptions = {
+			var myOptions = {
 						zoom: 10, // The larger the zoom number, the bigger the zoom
 						center: my_marker,
 						mapTypeId: google.maps.MapTypeId.ROADMAP
 					};
+			var distance = [];
+
+			function init(){
 				map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
 				getData();
 				getMyLocation();
 			}
-			
+
 			function getMyLocation() {
 				if (navigator.geolocation) { // the navigator.geolocation object is supported on your browser
 					navigator.geolocation.getCurrentPosition(function(position) {
@@ -35,69 +35,92 @@
 					});
 				}
 				else {
-					alert("Geolocation is not supported by your web browser.  What a shame!");
+					alert("Geolocation is not supported by your web browser. Time to upgrade!");
 				}
 			}
 
 			function getData(){ 
-				message.open("GET", "data.json", true) //what is the JSON file?
-				message.send(null);
-				message.onreadystatechange = function(){
-				if(message.readyState == 4){
-					data = message.responseText;
-					person = JSON.parse(data);
-				//	elem = document.getElementById("messages");
-				}else
-					{"error":"Whoops, something is wrong with your data!"} //error statement needed
-				
+				var request = new XMLHttpRequest();
+				var url = "https://secret-about-box.herokuapp.com/sendLocation";
+				var params = "login=JoshRamsey&lat=" + myLat + "&lng=" + myLng + "&message=Ming%20for%20president";
+				request.open("POST", url, true);
+				request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+				request.send(params);
+				request.onreadystatechange = function(){
+					if(request.readyState === 4 & request.status === 200){
+						data = request.responseText;
+						person = JSON.parse(data);
+					}else if(request.readyState === 4 & request.status !== 200){
+						alert("Whoops, something is wrong with your data!");
+					}
+					//error statement needed
+				}
 			}
 			
-			function renderMap()
-			{	
-				var my_marker;
+			function renderMap(){	
 				my_marker = new google.maps.LatLng(myLat, myLng);
 				map.panTo(my_marker);		// Update map and go there...
 
-				my_marker = new google.maps.Marker({			// Create a marker
-					position: me;
-					title: "JoshRamsey"; //is this correct?
+				my_marker = new google.maps.Marker({		// Create a marker
+					position: my_marker,
+					title: "JoshRamsey" 
 				});
+				google.maps.event.addListener(my_marker, 'click', function() {
+						infowindow.setContent(my_marker.title);
+						infowindow.open(map, my_marker);
+					});
 
 				my_marker.setMap(map);
+				for (var count = 0; count < person.length; count++){
+					    // add source 
+						var R = 6371000; // metres
+						var phi1 = toRadians(myLat);
+						var phi2 = toRadians(person[count].lat);
+						var dPhi = toRadians( (person[count].lat-myLat) );
+						var dGam = toRadians( (person[count].lng-myLng) );
 
-				for (count = 0; count < person.length; count++){
-					person[count] = new google.maps.Marker({
-						function howFar(){     // add source 
-							var R = 6371000; // metres
-							var φ1 = myLat.toRadians();
-							var φ2 = person[count][lat].toRadians();
-							var Δφ = (person[count][lat]-myLat).toRadians();
-							var Δλ = (person[count][lng]-mylng).toRadians();
+						var a = Math.sin(dPhi/2) * Math.sin(dPhi/2) +
+       							Math.cos(phi1) * Math.cos(phi2) *
+       							Math.sin(dGam/2) * Math.sin(dGam/2);
+						var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+						var distanceInMeters = (R * c);
+						distance[count] = distanceInMeters*(0.00062137119); 
 
-							var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-        							Math.cos(φ1) * Math.cos(φ2) *
-        							Math.sin(Δλ/2) * Math.sin(Δλ/2);
-							var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-							var distance[count] = R * c;
+
+						//convert to radians 
+						function toRadians(Value) {
+   		 					return Value * Math.PI / 180;
 						}
-						postition: person[count] = google.maps.LatLng(person[count][lat], person[count][lng]);
-						title: person[count][message];
-						title: person[count][login]; //how display login and message?
-						title: distance[count];
-						person[count].setMap(map);
-					})
 
+						//convert to miles 
+
+					marker = new google.maps.LatLng(person[count]["lat"], person[count]["lng"]);
+					marker = new google.maps.Marker({
+						postition: marker,
+						title: "Login: " + person[count]["login"] + "	Message: " + person[count]["message"] + "	Distance: " + distance[count]
+					});
+					google.maps.event.addListener(marker, 'click', function() {
+						infowindow.setContent(marker.title);
+						infowindow.open(map, marker);
+					});
+				//	console.log(marker);
+					marker.setMap(map);
 				}
-				 //but now theres an array of markers? 
-				// Open info window on click of marker 
-				google.maps.event.addListener(marker, 'click', function() {
-					infowindow.setContent(marker.title);
-					infowindow.open(map, marker);
-				});
 			}
+
+			// function addMarker(person_info, mark_distance) {
+			// 		var marker = new google.maps.Marker({
+			// 			postition:  new google.maps.LatLng(person_info["lat"], person_info["lng"]),
+			// 			title: "Login: " + person_info["login"] + "	Message: " + person_info["message"] + "	Distance: " + mark_distance,
+			// 			map: map
+			// 		});
+			// 		google.maps.event.addListener(marker, 'click', function() {
+			// 			infowindow.setContent(marker.title);
+			// 			infowindow.open(map, marker);
+			// 		});
+			// 	}
 		
 		</script>
-	}
 
 	</head>
 	
