@@ -11,6 +11,7 @@
 			var map;
 			var person = [];
 			var my_marker;
+			var marker;
 			var infowindow = new google.maps.InfoWindow();
 			var myOptions = {
 						zoom: 10, // The larger the zoom number, the bigger the zoom
@@ -52,7 +53,7 @@
 					}else if(request.readyState === 4 & request.status !== 200){
 						alert("Whoops, something is wrong with your data!");
 					}
-					 //error statement needed
+					//error statement needed
 				}
 			}
 			
@@ -70,7 +71,6 @@
 					});
 
 				my_marker.setMap(map);
-				console.log(person);
 				for (var count = 0; count < person.length; count++){
 					    // add source 
 						var R = 6371000; // metres
@@ -93,19 +93,32 @@
 						}
 
 						//convert to miles 
-						person[count] = new google.maps.Marker({
-							postition: person[count] = google.maps.LatLng(person[count].lat, person[count].lng),
-							title: "Login: " + person[count].login + "	Message:" + person[count].message + "	Distance:" + distance[count]
-						});
 
-					person[count].setMap(map);
-
-					google.maps.event.addListener(person[count], 'click', function() {
-						infowindow.setContent(person[count].title);
-						infowindow.open(map, person[count] );
+					marker = new google.maps.LatLng(person[count]["lat"], person[count]["lng"]);
+					marker = new google.maps.Marker({
+						postition: marker,
+						title: "Login: " + person[count]["login"] + "	Message: " + person[count]["message"] + "	Distance: " + distance[count]
 					});
+					google.maps.event.addListener(marker, 'click', function() {
+						infowindow.setContent(marker.title);
+						infowindow.open(map, marker);
+					});
+				//	console.log(marker);
+					marker.setMap(map);
 				}
 			}
+
+			// function addMarker(person_info, mark_distance) {
+			// 		var marker = new google.maps.Marker({
+			// 			postition:  new google.maps.LatLng(person_info["lat"], person_info["lng"]),
+			// 			title: "Login: " + person_info["login"] + "	Message: " + person_info["message"] + "	Distance: " + mark_distance,
+			// 			map: map
+			// 		});
+			// 		google.maps.event.addListener(marker, 'click', function() {
+			// 			infowindow.setContent(marker.title);
+			// 			infowindow.open(map, marker);
+			// 		});
+			// 	}
 		
 		</script>
 
