@@ -12,13 +12,13 @@
 			var person = [];
 			var my_marker;
 			var marker;
+			var distance = [];
 			var infowindow = new google.maps.InfoWindow();
 			var myOptions = {
 						zoom: 10, // The larger the zoom number, the bigger the zoom
 						center: my_marker,
 						mapTypeId: google.maps.MapTypeId.ROADMAP
 					};
-			var distance = [];
 
 			function init(){
 				map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
@@ -42,7 +42,7 @@
 			function getData(){ 
 				var request = new XMLHttpRequest();
 				var url = "https://secret-about-box.herokuapp.com/sendLocation";
-				var params = "login=JoshRamsey&lat=" + myLat + "&lng=" + myLng + "&message=Ming%20for%20president";
+				var params = "login=JoshRamsey&lat=" + myLat + "&lng=" + myLng + "&message=Ming%20For%20President%20Campaign%20Headquarters";
 				request.open("POST", url, true);
 				request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 				request.send(params);
@@ -53,72 +53,68 @@
 					}else if(request.readyState === 4 & request.status !== 200){
 						alert("Whoops, something is wrong with your data!");
 					}
-					//error statement needed
 				}
 			}
 			
 			function renderMap(){	
-				my_marker = new google.maps.LatLng(myLat, myLng);
-				map.panTo(my_marker);		// Update map and go there...
+				var image = {
+				    url: 'myMarker.png',
+				    size: new google.maps.Size(5, 5),
+				    origin: new google.maps.Point(0, 0),
+				    anchor: new google.maps.Point(0, 5)
+				  }
 
-				my_marker = new google.maps.Marker({		// Create a marker
+				var image = 'myMarker.png';
+
+				my_marker = new google.maps.LatLng(myLat, myLng);
+				map.panTo(my_marker);		
+
+				my_marker = new google.maps.Marker({		
 					position: my_marker,
-					title: "JoshRamsey" 
+					title: "JoshRamsey", 
+					icon: image
 				});
+
 				google.maps.event.addListener(my_marker, 'click', function() {
 						infowindow.setContent(my_marker.title);
 						infowindow.open(map, my_marker);
 					});
-
 				my_marker.setMap(map);
+
 				for (var count = 0; count < person.length; count++){
-					    // add source 
-						var R = 6371000; // metres
-						var phi1 = toRadians(myLat);
-						var phi2 = toRadians(person[count].lat);
-						var dPhi = toRadians( (person[count].lat-myLat) );
-						var dGam = toRadians( (person[count].lng-myLng) );
-
-						var a = Math.sin(dPhi/2) * Math.sin(dPhi/2) +
-       							Math.cos(phi1) * Math.cos(phi2) *
-       							Math.sin(dGam/2) * Math.sin(dGam/2);
-						var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-						var distanceInMeters = (R * c);
-						distance[count] = distanceInMeters*(0.00062137119); 
-
-
-						//convert to radians 
-						function toRadians(Value) {
-   		 					return Value * Math.PI / 180;
-						}
-
-						//convert to miles 
-
-					marker = new google.maps.LatLng(person[count]["lat"], person[count]["lng"]);
-					marker = new google.maps.Marker({
-						postition: marker,
-						title: "Login: " + person[count]["login"] + "	Message: " + person[count]["message"] + "	Distance: " + distance[count]
-					});
-					google.maps.event.addListener(marker, 'click', function() {
-						infowindow.setContent(marker.title);
-						infowindow.open(map, marker);
-					});
-				//	console.log(marker);
-					marker.setMap(map);
+					var R = 6371000; //in meters
+					var phi1 = toRadians(myLat);
+					var phi2 = toRadians(person[count].lat);
+					var dPhi = toRadians( (person[count].lat-myLat) );
+					var dGam = toRadians( (person[count].lng-myLng) );
+					var a = Math.sin(dPhi/2) * Math.sin(dPhi/2) +
+       					Math.cos(phi1) * Math.cos(phi2) *
+       					Math.sin(dGam/2) * Math.sin(dGam/2);
+					var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+					var distanceInMeters = (R * c);
+					distance[count] = distanceInMeters*(0.00062137119); //convert to miles			
+					
+					function toRadians(Value) {
+   		 				return Value * Math.PI / 180; 	//convert to radians 
+					}
 				}
-			}
 
-			// function addMarker(person_info, mark_distance) {
-			// 		var marker = new google.maps.Marker({
-			// 			postition:  new google.maps.LatLng(person_info["lat"], person_info["lng"]),
-			// 			title: "Login: " + person_info["login"] + "	Message: " + person_info["message"] + "	Distance: " + mark_distance,
-			// 			map: map
-			// 		});
-			// 		google.maps.event.addListener(marker, 'click', function() {
-			// 			infowindow.setContent(marker.title);
-			// 			infowindow.open(map, marker);
-			// 		});
-			// 	}
+				function addEvent(newMarker) {
+        			google.maps.event.addListener(newMarker, 'click', function() {
+						infowindow.setContent(newMarker.title);
+						infowindow.open(map, newMarker);
+					});	
+				}
+
+				for (var i = 0; i < person.length; i++) {
+                    var newMarker = new google.maps.Marker({
+                        position: {lat: person[i]["lat"], lng: person[i]["lng"]},
+                        map: map,
+                        title: "Login: " + person[i]["login"] + "	Message: " + person[i]["message"] + "	Distance: " + distance[i] + "	Last Seen: " + person[i]["created_at"] //last seen added for fun
+                    });
+        			addEvent(newMarker);
+                }
+            }
 		
 		</script>
 
