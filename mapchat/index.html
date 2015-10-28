@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<title>MapChat</title>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=true"></script>
 		<link rel="stylesheet" href="style.css" />
 		<script>
@@ -15,7 +16,7 @@
 			var distance = [];
 			var infowindow = new google.maps.InfoWindow();
 			var myOptions = {
-						zoom: 10, // The larger the zoom number, the bigger the zoom
+						zoom: 10,
 						center: my_marker,
 						mapTypeId: google.maps.MapTypeId.ROADMAP
 					};
@@ -56,23 +57,17 @@
 				}
 			}
 			
-			function renderMap(){	
-				var image = {
-				    url: 'myMarker.png',
-				    size: new google.maps.Size(5, 5),
-				    origin: new google.maps.Point(0, 0),
-				    anchor: new google.maps.Point(0, 5)
-				  }
 
-				var image = 'myMarker.png';
-
+			function renderMap(){
+				//make a marker for the current computer 
 				my_marker = new google.maps.LatLng(myLat, myLng);
 				map.panTo(my_marker);		
 
 				my_marker = new google.maps.Marker({		
 					position: my_marker,
-					title: "JoshRamsey", 
-					icon: image
+					title: "JoshRamsey - " + "Thats you!", 
+					icon: {url:"myMarker.png",
+         				  scaledSize: new google.maps.Size(52, 64)}
 				});
 
 				google.maps.event.addListener(my_marker, 'click', function() {
@@ -81,6 +76,7 @@
 					});
 				my_marker.setMap(map);
 
+				//Haversine Formula (source: http://www.movable-type.co.uk/scripts/latlong.html)
 				for (var count = 0; count < person.length; count++){
 					var R = 6371000; //in meters
 					var phi1 = toRadians(myLat);
@@ -99,27 +95,24 @@
 					}
 				}
 
-				function addEvent(newMarker) {
+				function addEvent(newMarker) { //add a new marker for each person
         			google.maps.event.addListener(newMarker, 'click', function() {
 						infowindow.setContent(newMarker.title);
 						infowindow.open(map, newMarker);
 					});	
 				}
 
-				for (var i = 0; i < person.length; i++) {
+				for (var i = 0; i < person.length; i++) { //assign data to each new marker
                     var newMarker = new google.maps.Marker({
                         position: {lat: person[i]["lat"], lng: person[i]["lng"]},
                         map: map,
-                        title: "Login: " + person[i]["login"] + "	Message: " + person[i]["message"] + "	Distance: " + distance[i] + "	Last Seen: " + person[i]["created_at"] //last seen added for fun
+                        title: "Login: " + person[i]["login"] + "	Message: " + person[i]["message"] + "	Distance: " + distance[i] + "	Last Seen: " + person[i]["created_at"] //'last seen' added for fun
                     });
         			addEvent(newMarker);
                 }
             }
-		
 		</script>
-
 	</head>
-	
 	<body onload="init()">
 		<div id="map_canvas"></div>
 	</body>
