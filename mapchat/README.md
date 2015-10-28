@@ -1,20 +1,7 @@
 //////// NOTES ///////
 
-Process:
+TODO:
 
--set up map
--create "me"
--read in JSON data
--parse
--create other people on map
-	-location, login, message, distance 
+You must display your location on the map with unique marker (i.e., using an image of your choice) and info window with a note of your login after retrieving information from navigator.geolocation ? -- just username on our own marker?
 
-//accrediting examples 
-
-QUESTIONS:
-
-//unique marker?
-//HTML post?
-//viewing on gh pages 
-//array of markers
-//global vars 
+Marker size?
