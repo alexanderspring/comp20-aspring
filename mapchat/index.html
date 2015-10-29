@@ -78,6 +78,10 @@
 
 				//Haversine Formula (source: http://www.movable-type.co.uk/scripts/latlong.html)
 				for (var count = 0; count < person.length; count++){
+					function toRadians(Value) {
+   		 				return Value * Math.PI / 180; 	//convert to radians 
+					}
+					
 					var R = 6371000; //in meters
 					var phi1 = toRadians(myLat);
 					var phi2 = toRadians(person[count].lat);
@@ -90,9 +94,6 @@
 					var distanceInMeters = (R * c);
 					distance[count] = distanceInMeters*(0.00062137119); //convert to miles			
 					
-					function toRadians(Value) {
-   		 				return Value * Math.PI / 180; 	//convert to radians 
-					}
 				}
 
 				function addEvent(newMarker) { //add a new marker for each person
