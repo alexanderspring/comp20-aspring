@@ -107,7 +107,7 @@
                     var newMarker = new google.maps.Marker({
                         position: {lat: person[i]["lat"], lng: person[i]["lng"]},
                         map: map,
-                        title: "Login: " + person[i]["login"] + "	Message: " + person[i]["message"] + "	Distance: " + distance[i] + "	Last Seen: " + person[i]["created_at"] //'last seen' added for fun
+                        title: "Login: " + person[i]["login"] + "<br>" + "Message: " + person[i]["message"] + "<br>" + "Distance: " + distance[i] + "<br>" + "Last Seen: " + person[i]["created_at"] //'last seen' added for fun
                     });
         			addEvent(newMarker);
                 }
