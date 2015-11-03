@@ -6,7 +6,54 @@
 	<title>Captain's Log</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 	<script>
-	  // Your work will be done here...
+
+	 $(document).ready(function(){
+   		localStorage.setItem('phrase', 'loginput');
+   		$('log').append('<p>'new Date().getTime() '-' localStorage['phrase'] '</p>')
+ 		});
+
+
+	 $(function(){
+ 		 $('input[name="butAssignProd"]').click(function(){
+ 			localStorage.setItem('phrase', 'loginput');
+   			$('log').append('<p>'new Date().getTime() '-' localStorage['phrase'] '</p>')
+ 	 });
+  
+  
+  //press enter on text area..
+  
+ 	$('#txtSearchProdAssign').keypress(function (e) {
+ 		var key = e.which;
+ 		if(key == 13)  // the enter key code
+  		{		
+    $('input[name = butAssignProd]').click();
+    return false;  
+  }
+});
+  
+});
+/* lecture example 
+	 function runme() {
+		localStorage.setItem('phrase', 'loginput');
+		elem = document.getElementById("header");
+		elem.innerHTML = "<h1>" localStorage['phrase'] + "</h1>";
+	}
+	
+	function reload() {
+		elem = document.getElementById("results");
+		output = "";
+		for (key in localStorage) {
+			output = output + "<p>" + localStorage[key] + "</p>\n";
+		}
+		elem.innerHTML = output;
+	}
+	
+	function store() {
+		txt = document.getElementById("loginput").value;
+		localStorage[new Date().getTime()] = txt;
+		reload();
+	}
+	*/
 	</script>
 </head>
 
