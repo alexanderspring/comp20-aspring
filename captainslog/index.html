@@ -7,32 +7,18 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 	<script>
 
-	 $(document).ready(function(){
-   		localStorage.setItem('phrase', 'loginput');
-   		$('log').append('<p>'new Date().getTime() '-' localStorage['phrase'] '</p>')
- 		});
-/*
-	 function runme() {
-		localStorage.setItem('phrase', 'loginput');
-		elem = document.getElementById("header");
-		elem.innerHTML = "<h1>" localStorage['phrase'] + "</h1>";
-	}
-	
-	function reload() {
-		elem = document.getElementById("results");
-		output = "";
-		for (key in localStorage) {
-			output = output + "<p>" + localStorage[key] + "</p>\n";
-		}
-		elem.innerHTML = output;
-	}
-	
-	function store() {
-		txt = document.getElementById("loginput").value;
-		localStorage[new Date().getTime()] = txt;
-		reload();
-	}
-	*/
+	 $(document).keypress(function(e) {
+    		if(e.which == 13) {
+        		var today = new Date();
+        		var date_stamp = today.toDateString();
+       			var content = $('#msg');
+       			var time_stamp = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+   				localStorage.setItem('phrase', content.val());
+				$('#log').prepend('<p>' + date_stamp + " " + time_stamp + " - " + localStorage['phrase'] + '</p>');
+				$('#msg').val(''); //clear the input box 
+    		}
+ 	});
+
 	</script>
 </head>
 
