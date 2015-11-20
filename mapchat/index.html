@@ -3,6 +3,7 @@
 	<head>
 		<title>MapChat</title>
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<meta charset="utf-8">
 		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=true"></script>
 		<link rel="stylesheet" href="style.css" />
 		<script>
@@ -23,7 +24,6 @@
 
 			function init(){
 				map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-				getData();
 				getMyLocation();
 			}
 
@@ -32,7 +32,7 @@
 					navigator.geolocation.getCurrentPosition(function(position) {
 						myLat = position.coords.latitude;
 						myLng = position.coords.longitude;
-						renderMap();
+						getData();
 					});
 				}
 				else {
@@ -42,7 +42,7 @@
 
 			function getData(){ 
 				var request = new XMLHttpRequest();
-				var url = "https://secret-about-box.herokuapp.com/sendLocation";
+				var url = 'http://lit-taiga-2251.herokuapp.com/sendLocation';
 				var params = "login=JoshRamsey&lat=" + myLat + "&lng=" + myLng + "&message=Ming%20For%20President%20Campaign%20Headquarters";
 				request.open("POST", url, true);
 				request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -55,11 +55,13 @@
 						alert("Whoops, something is wrong with your data!");
 					}
 				}
+				renderMap();
 			}
 			
 
 			function renderMap(){
 				//make a marker for the current computer 
+	
 				my_marker = new google.maps.LatLng(myLat, myLng);
 				map.panTo(my_marker);		
 
