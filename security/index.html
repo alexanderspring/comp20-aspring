@@ -1,0 +1,68 @@
+<!DOCTYPE HTML> 
+<html>
+	<head>
+		<title>Security Assesment</title>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body>
+	<h1> Server Side Security Assesment </h1>
+		<p>
+			<span class="author"> Conducted by Alexander Spring
+		</p>
+	<h2> Introduction </h2>
+		<p> 
+			This security assesment describes the web security flaws of the MapChat application server created by Ming Chow for the Tufts University Fall <br> 2015 Web Programming course. The server was deployed by using Heroku, Node.js with the Express web framework, and MongoDB. <br> The application recieves check-ins from a set of approved logins. A check-in consists of a login, latitude, longitude, and a message. <br>
+		</p>
+		<p>
+			The flaws discussed in this assesment were determined by their level of threat to both the longevity of the developer's application, the <br>threat to the functionality of the server, as well as the threat to the client and other clients privacy. <br>
+		</p>
+	<h2> Methodology </h2>
+		<p>
+			First the server was deployed to a new Heroku app with MongoLab installed. The code was not analyzed until "black box" testing was carried <br>out. Most of the security flaws were found without examining the server code. However, eventually the code was reviewed and further faults <br> were exposed.
+		</p>
+
+	<h2> Abstract of Findings </h2>
+		<p>
+			The findings can be broken into three categories:
+			<ul>
+				<li> Exposure of information to those who shouldnt have access
+				<li> Database limitations and server volunerabilities 
+				<li> Enabled cross site scripting (XSS)
+			</ul>
+		</p>
+
+	<h2> Issues Found </h2>
+		<p> <span class="subheaders"> Cross Site Scripting (XSS)
+			<ul>
+				<li>Problem <br> 
+				XSS occurs when scripts are maliciously embedded in a page that are executed on the client-side (in the user’s web browser) rather than on the server-side. Unfortunetly, the ability for the user to determine their own message allows for the insertion of a <code> script </code> tag in the message. Here, the google plugin Postman was used to insert script into the client side of the application. The injected script was used to produce a simple alert popup. However, someone with malicious intent could inject script which steals the clients information, corrupts the browser, and so on.
+					<img src="insert_script.png" width="200" height="200" alt="how script was inserted"/>
+					<img src="xss.png" width="200" height="200" alt="popup"/>
+				<li>Possible Resolutions <br> 
+				It is vital that when reading in a user's check-in information, any tags are sanitized upon reading in the data. This can be acomplished by using HTML encoding to encode the characters in the message. In this instance, <code> &lt;script&gt; </code> becomes 
+				<code> &amp;gt;script&amp;gt; </code>
+			</ul>
+		</p>
+		<p> <span class="subheaders"> Limitations of MongoDB
+			<ul>
+				<li>MongoDB Opperators Allow For Privacy Violations
+				<li>MongoDB Has Limited Functional Capacity 
+			</ul>
+		</p>
+		<p> <span class="subheaders"> Setting Response Headers
+			<ul>
+				<li>
+			</ul>
+		</p>
+		<p> <span class="subheaders"> Cross Site Scripting
+			<ul>
+				<li>
+			</ul>
+		</p>
+
+	<h2> Conclusion </h2>
+
+	</body>
+</html>

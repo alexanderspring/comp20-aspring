@@ -1,0 +1,43 @@
+h1{
+	font-family: Arial; 
+	font-weight: bold;
+	background-color: #699FC5;
+    border: 2px solid;   
+    border-color: #A6C9E3;
+    color: black;    
+    text-align: center;    
+    font-size: 25px;
+}
+
+h2{
+	font-weight: bold;
+}
+
+body {
+	font-family: Century;
+	font-size: 15px;
+	margin-left: 5%;
+	margin-right: 5%;
+	background-color: #699FC5;
+}
+
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width:650px;
+    height:200px;
+}
+
+.subheaders{
+	font-weight: bold;
+}
+
+.timeline{
+	font-style: italic;
+}
+
+.author{
+	text-align: center; 
+	font-weight: bold;
+}
