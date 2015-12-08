@@ -1,68 +1,124 @@
 <!DOCTYPE HTML> 
 <html>
 	<head>
-		<title>Security Assesment</title>
+		<title>Security Assessment</title>
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 		<meta charset="utf-8">
 		<link rel="stylesheet" href="style.css" />
 	</head>
 	<body>
-	<h1> Server Side Security Assesment </h1>
+	<h1> Server Side Security Assessment </h1>
 		<p>
 			<span class="author"> Conducted by Alexander Spring
 		</p>
 	<h2> Introduction </h2>
 		<p> 
-			This security assesment describes the web security flaws of the MapChat application server created by Ming Chow for the Tufts University Fall <br> 2015 Web Programming course. The server was deployed by using Heroku, Node.js with the Express web framework, and MongoDB. <br> The application recieves check-ins from a set of approved logins. A check-in consists of a login, latitude, longitude, and a message. <br>
+			This security assessment describes the web security flaws of the MapChat application server created by Ming Chow for the Tufts University Fall 2015 Web Programming course. The server was deployed by using Heroku, Node.js with the Express web framework, and MongoDB. The application receives check-ins from a set of approved logins. A check-in consists of a login, latitude, longitude, and a message. 
 		</p>
 		<p>
-			The flaws discussed in this assesment were determined by their level of threat to both the longevity of the developer's application, the <br>threat to the functionality of the server, as well as the threat to the client and other clients privacy. <br>
+			The flaws discussed in this assessment were determined by their level of threat to both the longevity of the developer's application, the threat to the functionality of the server, as well as the threat to the client and other clients privacy.
 		</p>
 	<h2> Methodology </h2>
 		<p>
-			First the server was deployed to a new Heroku app with MongoLab installed. The code was not analyzed until "black box" testing was carried <br>out. Most of the security flaws were found without examining the server code. However, eventually the code was reviewed and further faults <br> were exposed.
+			First the server was deployed to a new Heroku app with MongoLab installed. The code was not analyzed until "black box" testing was carried out. Most of the security flaws were found without examining the server code. Eventually the code was reviewed and further faults were exposed.
 		</p>
 
 	<h2> Abstract of Findings </h2>
 		<p>
-			The findings can be broken into three categories:
+			The findings can be broken into three broad categories:
 			<ul>
-				<li> Exposure of information to those who shouldnt have access
-				<li> Database limitations and server volunerabilities 
+				<li> Exposure of information to those who shouldn't have access
+				<li> Database limitations and server vulnerabilities 
 				<li> Enabled cross site scripting (XSS)
 			</ul>
 		</p>
 
 	<h2> Issues Found </h2>
 		<p> <span class="subheaders"> Cross Site Scripting (XSS)
-			<ul>
-				<li>Problem <br> 
-				XSS occurs when scripts are maliciously embedded in a page that are executed on the client-side (in the user’s web browser) rather than on the server-side. Unfortunetly, the ability for the user to determine their own message allows for the insertion of a <code> script </code> tag in the message. Here, the google plugin Postman was used to insert script into the client side of the application. The injected script was used to produce a simple alert popup. However, someone with malicious intent could inject script which steals the clients information, corrupts the browser, and so on.
-					<img src="insert_script.png" width="200" height="200" alt="how script was inserted"/>
-					<img src="xss.png" width="200" height="200" alt="popup"/>
-				<li>Possible Resolutions <br> 
-				It is vital that when reading in a user's check-in information, any tags are sanitized upon reading in the data. This can be acomplished by using HTML encoding to encode the characters in the message. In this instance, <code> &lt;script&gt; </code> becomes 
-				<code> &amp;gt;script&amp;gt; </code>
-			</ul>
+			<p> <span class="timeline"> Problem: Insertion of Malicious Script As The Checkin Message </span> <br> 
+
+			XSS occurs when scripts are maliciously embedded in a page that are executed on the client-side (in the user's web browser) rather than on the server-side. Unfortunately, the ability for the user to determine their own message allows for the insertion of a <code> script</code> tag in the message. Here, the Google plug-in Postman was used to insert script into the client side of the application. The injected script was used to produce a simple alert pop-up. However, someone with malicious intent could inject script which steals the clients information, corrupts the browser, and so on.
+
+				<div id="images">
+					<img src="insert_script.png" alt="how script was inserted"/>
+				</div>
+				<div id="images">
+					<img src="xss.png" alt="popup"/>
+				</div>
+
+			<p> <span class="timeline">Possible Resolutions </span><br> 
+
+			It is vital that when reading in a user's check-in information, any tags are sanitized upon reading in the data. This can be accomplished by using HTML encoding to encode the characters in the message. In this instance, <code> &lt;script&gt; </code> becomes 
+			<code> &amp;gt;script&amp;gt; </code>
 		</p>
-		<p> <span class="subheaders"> Limitations of MongoDB
-			<ul>
-				<li>MongoDB Opperators Allow For Privacy Violations
-				<li>MongoDB Has Limited Functional Capacity 
-			</ul>
+		<p> <span class="subheaders"> Practical limitations of MongoDB
+			<p> <span class="timeline"> Problem: MongoDB Operators Allow For Privacy Violations </span><br>
+
+			When sending the <code> GET </code> request <code> /latest.json?login=mchow </code> the application is supposed to return the last check-in of the specified login, in this case mchow. If no login exists, the application should return <code> {} </code> However, when sending the request <code> /latest.json?login[$ne]=my_login </code> the application returns the last login in the database that is not the specified login. In this case executing <code> /latest.json?login[$ne]=mchow </code> returned my login, <code> JoshRamsey </code><br><br>
+			
+			<img src="mongo_opperators.png"  alt="privacy breech"/>
+
+			<br> Since we are using the Mongo Database, the Mongo operators can be used to return data that should not be returned. In this case, <code> $ne </code> selects the documents where the value of the field is not equal (i.e. !=) to the specified value. This includes documents that do not contain the field. This exposes the private information of one client to another client. If the database was storing credit card or other sensitive information this could be catastrophic. 
+			
+			<p> <span class="timeline"> Possible Resolutions </span><br>
+			Again, an attempt at sanitation should be made. Additionally, another database may be used to alleviate this issue. The Mongo documentation should be reviewed as well to see if there is a way to strip the client of the ability to manipulate the database with operators. <br> 
 		</p>
-		<p> <span class="subheaders"> Setting Response Headers
-			<ul>
-				<li>
-			</ul>
+		<p> <span class="subheaders"> Theoretical limitations of MongoDB
+				
+			<p> <span class="timeline"> Problem: MongoDB Has Limited Functional Capacity </span> <br>
+			
+			This next security flaw is more theoretical but is very real. There is nothing in the server code that limits the number of check-ins from a given login. This means that a client could overload the database with check-ins. This may cause the server to crash or even worse, incur a charge on Heroku. The biggest issue here is that if malicious script existed, it could be injected rapidly. <br> <br>
+
+			It's quite hard to test these theories since computing resources were limited. However, in an attempt to achieve some significant result, the use of Amazon Web Services (AWS) was used. Specifically, the Amazon Elastic Compute Cloud (Amazon EC2) service was used. This service is a web service that "provides resizable compute capacity in the cloud." <br><br> Amazon describes their services below:
+				<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Amazon EC2’s simple web service interface allows you to obtain and configure capacity with minimal <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;friction. It provides you with complete control of your computing resources and lets you run on Amazon’s <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;proven computing environment. Amazon EC2 reduces the time required to obtain and boot new server <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;instances to minutes, allowing you to quickly scale capacity, both up and down, as your computing requirements change <br> <br>
+				
+				<div id="images">
+					<img src="amazon_web.png" alt="aws"/>
+				</div>
+				<div id="images">
+					<img src="amazon_console.png" alt="my aws console"/>
+				</div>
+
+			With the creation of a bash script which will cause infinite injections into the data base running on Amazon's server, an attempt was made at filling/overloading the database. The bash script consisted of an infinite loop which curled in data to the database. <br> <br>
+			
+			<img src="bash_script.png" alt="bash script used for rapid insertion"/>
+			
+			<br>The script was then uploaded to the Amazon server and executed. The result was rapid insertion of data (rate of ~150/minute) <br> <br>
+			
+			<div id="images">
+				<img src="amazon_web_shell.png" alt="aws command line"/>
+			</div>
+			<div id="images">
+				<img src="rapid_insertion.png" alt="lots of data"/>
+			</div> 
+			
+			Upon review, the script used almost 20% of the alloted Amazon server CPU, which seems somewhat sizable. Though the server was shut down after two minutes to avoid fees by Amazon or Heroku, it is very plausible that if the script continued to execute and use more CPU, the database may have been affected. Further tests should be performed to test this hypothesis.<br> <br>
+			
+			<img src="amazon_cpu.png" alt="graph of server CPU"/>
+
+			<p> <span class="timeline">Possible Resolutions </span><br> 
+			
+			The server code can be updated to only accept a certain number of checkins per minute. It may be useful to also limit the number of checkins from a certain login per unit time. 
 		</p>
-		<p> <span class="subheaders"> Cross Site Scripting
-			<ul>
-				<li>
-			</ul>
+		<p> <span class="subheaders"> Setting Response Headers 
+			<p> <span class="timeline"> Problem: Response Headers Allow Access From All Origins </span><br>
+			
+			The root of the problem with the set response headers lies with the Same Origin Policy (SOP) and Cross Origin Resource Sharing (CORS). The SOP states that requests must have the same URI scheme, hostname, and port number. This means that content from one origin will be unable to access/modify content from a different origin. Enabling CORS is a way to bypass the SOP. In this case, this was needed for the web server to enable secure cross-domain data transfers (the check-ins).
+			
+			<img src="cors.png" alt="enabling of CORS in the server" />
+			
+			However, by setting the response header to "<code>Access-Control-Allow-Origin: * </code>" the requested resource allows sharing with every origin. This means that any site can send a request to the server and access the server’s response. This is a violation of privacy for clients. Additionally, this leaves the application vulnerable when there may be a malicious script in the request to the server.
+
+			<p> <span class="timeline">Possible Resolutions </span><br> 
+			
+			Upon research a better way to handle CORS would be the following: have the server read the Origin header from the client, compare that to the list of domains you'd like to allow, and if it matches, echo the value of the Origin header back to the client as the Access-Control-Allow-Origin header in the response.
 		</p>
 
 	<h2> Conclusion </h2>
+	
+	Unfortunately, at the current time this application is ridden with security flaws. The privacy of clients is not maintained to the accepted standard. The resource sharing must be limited in its scope to prevent the threat of other clients accessing restricted information. If these other clients were to send malicious script as a check-in, the server code does not attempt to sanitize incoming data or limit the number of check-ins by these clients. Sanitation should not be limited to script but should also address Mongo operators. In the future, if the application gains popularity, the capacity of the Mongo database should also be addressed, as a crashed database is an unsecure one. While these issues are a plenty and are quite significant, they are indeed easily fixable. 
+
+	<br><br>
 
 	</body>
 </html>

@@ -25,9 +25,20 @@ img {
     display: block;
     margin-left: auto;
     margin-right: auto;
-    width:650px;
-    height:200px;
+    padding:2px;
+    border:1px solid white;
+    background-color:black;
+    max-height: 500px;
+    max-width: 550px;
 }
+
+#images{
+	test-align: center;
+	width: 50%;
+	float: left; 
+}
+
+.tab { margin-left: 40px; }
 
 .subheaders{
 	font-weight: bold;
