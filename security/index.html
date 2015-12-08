@@ -27,9 +27,12 @@
 		<p>
 			The findings can be broken into three broad categories:
 			<ul>
-				<li> Exposure of information to those who shouldn't have access
-				<li> Database limitations and server vulnerabilities 
-				<li> Enabled cross site scripting (XSS)
+				<li> Exposure of information to those who shouldn't have access<br>
+					Improper scoping of Cross Origin Resource Sharing which enables other servers to access responses. The use of Mongo operators which allows clients to access information about other clients<br><br>
+				<li> Database limitations <br>
+					The size of the database is not sufficient for mass use and unlimited check-ins are permitted <br><br>
+				<li> Enabled cross site scripting (XSS)<br>
+					Malicious script can be inserted on the client side <br>
 			</ul>
 		</p>
 
